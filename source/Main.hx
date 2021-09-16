@@ -1,65 +1,66 @@
 package;
 
+import flixel.FlxGame;
+import flixel.FlxState;
+import openfl.Assets;
+import openfl.Lib;
+import openfl.display.FPS;
+import openfl.display.Sprite;
+import openfl.events.Event;
 
-import lime.app.Application;
-import lime.graphics.RenderContext;
+class Main extends Sprite
+{
+	var gameWidth:Int = 1280;
+	var gameHeight:Int = 720;
+	var initialState:Class<FlxState> = TitleState;
+	var zoom:Float = -1; 
+	var framerate:Int = 60; 
+	var skipSplash:Bool = true; 
+	var startFullscreen:Bool = false; 
 
-
-class Main extends Application {
-	
-	
-	public function new () {
-		
-		super ();
-		
-		trace ("Hello World");
-		
+	public static function main():Void
+	{
+		Lib.current.addChild(new Main());
 	}
-	
-	
-	public override function render (context:RenderContext):Void {
-		
-		switch (context.type) {
-			
-			case CAIRO:
-				
-				var cairo = context.cairo;
-				
-				cairo.setSourceRGB (0.75, 1, 0);
-				cairo.paint ();
-			
-			case CANVAS:
-				
-				var ctx = context.canvas2D;
-				
-				ctx.fillStyle = "#BFFF00";
-				ctx.fillRect (0, 0, window.width, window.height);
-			
-			case DOM:
-				
-				var element = context.dom;
-				
-				element.style.backgroundColor = "#BFFF00";
-			
-			case FLASH:
-				
-				var sprite = context.flash;
-				
-				sprite.graphics.beginFill (0xBFFF00);
-				sprite.graphics.drawRect (0, 0, window.width, window.height);
-			
-			case OPENGL, OPENGLES, WEBGL:
-				
-				var gl = context.webgl;
-				
-				gl.clearColor (0.75, 1, 0, 1);
-				gl.clear (gl.COLOR_BUFFER_BIT);
-			
-			default:
-			
+
+	public function new()
+	{
+		super();
+
+		if (stage != null)
+		{
+			init();
 		}
-		
+		else
+		{
+			addEventListener(Event.ADDED_TO_STAGE, init);
+		}
 	}
-	
-	
+
+	private function init(?E:Event):Void
+	{
+		if (hasEventListener(Event.ADDED_TO_STAGE))
+		{
+			removeEventListener(Event.ADDED_TO_STAGE, init);
+		}
+
+		setupGame();
+	}
+
+	private function setupGame():Void
+	{
+		var stageWidth:Int = Lib.current.stage.stageWidth;
+		var stageHeight:Int = Lib.current.stage.stageHeight;
+
+		if (zoom == -1)
+		{
+			var ratioX:Float = stageWidth / gameWidth;
+			var ratioY:Float = stageHeight / gameHeight;
+			zoom = Math.min(ratioX, ratioY);
+			gameWidth = Math.ceil(stageWidth / zoom);
+			gameHeight = Math.ceil(stageHeight / zoom);
+		}
+		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
+		addChild(new FPS(10, 3, 0xFFFFFF));
+	}
 }

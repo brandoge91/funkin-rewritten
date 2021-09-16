@@ -5,9 +5,22 @@
 	<app main="Main" path="export" file="funkinRewritten" />
 	
 	<source path="source" />
+
+	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" vsync="false"/>
 	
 	<haxelib name="lime" />
-	
+	<app preloader="flixel.system.FlxPreloader" />
 	<assets path="assets" rename="assets" />
 	
+	<set name="BUILD_DIR" value="export/debug" if="debug" />
+	<set name="BUILD_DIR" value="export/release" unless="debug" />
+	<set name="BUILD_DIR" value="export/32bit" if="32bit" />
+	<classpath name="source" />
+
+
+	<haxelib name="flixel" />
+	<haxedev set='webgl' />
+	<haxelib name="flixel-addons" />
+	<haxelib name="hscript" />
+	<haxelib name="flixel-ui" />
 </project>
